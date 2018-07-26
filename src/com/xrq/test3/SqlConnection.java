@@ -20,17 +20,22 @@ public class SqlConnection {
 			*3、数据库登录名
 			*3、数据库登录密码
 			*/
-	    private static final String URL="jdbc:mysql://localhost:3306/testdb";//数据库连接字符串，这里的deom为数据库名
+	    private  String URL="jdbc:mysql://localhost:3306/testdb";//数据库连接字符串，这里的deom为数据库名
 	    private static final String NAME="root";//登录名
 	    private static final String PASSWORD="123456";//密码
 	    
 	    /*
 	     * 连接并且查询数据库
+	     * 参数num：查询项目的列数，默认都是String
+	     * 参数sqlCommand：要执行的sql命令，暂时只写了查询。插入删除徐另写
 	     */
-	    
-		public String[] TheSqlConnection(String sqlCommand)
+	    public void SetURL(String URL)
+	    {
+	    	this.URL = URL;
+	    }
+		public String[][] TheSqlConnection(int row,int column, String sqlCommand)
 		{
-			String [] parm= new String[2];
+			String [][] parm= new String[row][column];
 			
 	        //1.加载驱动
 	        try {
@@ -46,14 +51,18 @@ public class SqlConnection {
 				 System.out.println("获取数据库连接成功！");
 			        Statement stmt = conn.createStatement(); //创建Statement对象
 			        ResultSet rs = stmt.executeQuery(sqlCommand);
+			        int j=0;
 			        while(rs.next())
 			        {
-			        	
-			        	parm[0]=rs.getString(2);
-			        	parm[1] = rs.getString(3);
-		
+			        	for(int i=0;i<column;i++)			   
+			        	{
+			        		parm[j][i]=rs.getString(i+1);
+			        	}
+			     		j++;
+			     		if(j>=row) break;
 			        }
-			           
+			        j=0;
+			       
 			} catch (SQLException e) {
 				System.out.println("获取数据库连接失败！");
 	                        //添加一个println，如果连接失败，检查连接字符串或者登录名以及密码是否错误
@@ -70,7 +79,7 @@ public class SqlConnection {
 					conn=null;
 				}
 					 	
-			}
+			} 
 			return parm;
 			
 		}

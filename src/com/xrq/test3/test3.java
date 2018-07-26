@@ -32,28 +32,59 @@ public class test3 extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		String [] dbData = new String[2];  //用于存放从数据库获取的值
+		int PageNow =1;  //当前页数
+		int PageRow =5;  //每页显示5行
+		int PageCount=1;  //总页数
+		String SPageNow = request.getParameter("PageNow"); //接受jsp的超链接请求
+		if(SPageNow!=null)
+		{
+			PageNow = Integer.parseInt(SPageNow);
+		}
+		String [] dbData = new String[3];  //用于存放从数据库获取的账号密码值,长度为字段数
+		String [][] productData = new String[PageRow][4]; //用于存放从数据库获取的商品数据
 		String dbPassword =null;
 		String inputName = request.getParameter("userName");
 		String inputPassword =  request.getParameter("userPassword");
-		String str = "SELECT * FROM manager WHERE user ="+"\""+ inputName +"\"";  //检查输入用户名在数据库中是否存在
+		String strLogin = "SELECT * FROM manager WHERE user ="+"\""+ inputName +"\"";  //检查输入用户名在数据库中是否存在
+		String strProduct = "SELECT * FROM product LIMIT "+(PageNow-1)*PageRow+","+PageRow*PageNow;
+		String strRowCount = "select count(1) from product";
 		/*
 		 * 此处使用session校验防止越过登陆
 		 * 也作为防呆设计，30s无操作要重新登陆
 		 */
-		HttpSession hs = request.getSession(true);
+		HttpSession hs = request.getSession();
 		hs.setMaxInactiveInterval(30); //session有效期为30秒
-		hs.setAttribute("name", inputName);
+	
 		//执行sql查询
 		SqlConnection conn1 = new SqlConnection();
-		dbData  = conn1.TheSqlConnection(str);  //返回数据库查询结果
-		dbPassword = dbData[1];  //查找第二个字段，即密码
-		if(inputPassword.equals(dbPassword))
+		conn1.SetURL("jdbc:mysql://localhost:3306/testdb");
+		dbData  = conn1.TheSqlConnection(1,3,strLogin)[0];  //返回账户数据库查询结果
+		dbPassword = dbData[2];  //查找第二个字段，即密码
+	/*	String passKey = (String)hs.getAttribute("pass");*/
+		if(inputPassword==null)
+		{
+			inputPassword=""; 
+	/*		passKey=""; */
+		}
+		if(inputPassword.equals(dbPassword) || SPageNow!=null) 
 		{
 			//验证通过
 			System.out.println("校验成功！");
-			/*RequestDispatcher view = request.getRequestDispatcher("LoginResult.jsp");
-			view.forward(request, response);*/
+			int RowCount = Integer.parseInt(conn1.TheSqlConnection(1,1, strRowCount)[0][0]);//获得数据库总记录数
+			if(RowCount%PageRow ==0)   //判断总共显示多少页
+					{
+						PageCount = RowCount/PageRow;
+					}else 
+					{	PageCount =RowCount/PageRow+1;
+					} 
+			
+			productData = (String[][])conn1.TheSqlConnection(PageRow,4,strProduct);
+			hs.setAttribute("productData", productData); //数据库查询商品数据，二维数组
+			hs.setAttribute("PageRow",PageRow);  //每行显示页数，传递给JSP
+			hs.setAttribute("PageNow", PageNow);
+			hs.setAttribute("PageCount", PageCount);
+			if(inputName==null) inputName = (String)hs.getAttribute("name");
+			hs.setAttribute("name", inputName);  
 			response.sendRedirect("LoginResult.jsp");
 		}
 		else {
