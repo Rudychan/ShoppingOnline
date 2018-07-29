@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=utf-8"
+<%@ page language="java"  contentType="text/html; charset=utf-8"
     pageEncoding="utf-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <%
@@ -18,6 +18,7 @@
 				out.print(name);
 			%>
 			<div style="text-align:center">
+			<h1>商品信息表</h1>
 		<table border ="1"  style="width: 60%;margin:auto">
 			<tr>
 			<td>商品名称</td>
@@ -33,9 +34,9 @@
 			for(int i=0;i<PageRow;i++)
 			{%>
 				<tr>
-				<td><% out.print(productData[i][1]); %></td>
+				<td><% out.print(productData[i][0]); %></td>
+				<td><% out.print(productData[i][1]);%></td>
 				<td><% out.print(productData[i][2]);%></td>
-				<td><% out.print(productData[i][3]);%></td>
 				</tr>
 			<% }
 			 %>

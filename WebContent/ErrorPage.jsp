@@ -24,7 +24,6 @@
 <%
 		//转向语句
 		response.setHeader("Refresh", "3;URL=index.html");
-	/* 	response.sendRedirect("index.html"); */
 %>
 </body>
 </html>
