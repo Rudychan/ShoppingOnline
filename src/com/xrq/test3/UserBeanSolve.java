@@ -29,7 +29,7 @@ public class UserBeanSolve {
 				{
 					dbPassword =rs.getString(3);
 					System.out.println("databse password: "+dbPassword);
-				}
+				}else return false;
 				if(dbPassword.equals(password))
 					return true; 
 				else return false;
@@ -53,7 +53,6 @@ public class UserBeanSolve {
 		}
 	
 	
-	
 	/*
 	 * 获取商品信息，以UserBean的方式放在ArrayList中
 	 * 返回值为ArrayList
@@ -70,6 +69,7 @@ public class UserBeanSolve {
 			while(rs.next())
 			{
 				UserBean usb = new UserBean();
+				usb.setID(rs.getString(1));
 				usb.setproductName(rs.getString(2));
 				usb.setPrice(rs.getString(3));
 				usb.setNumber(rs.getString(4));
@@ -130,4 +130,67 @@ public class UserBeanSolve {
 		}
 		 return RowCount;
 	}
+	
+/*
+ * 修改商品数据
+ */
+	public void modify(UserBean b1)
+	{	
+			dbc = new DBConnect();
+			conn = dbc.getConnect();
+			String MID = b1.getID();
+			String MPrice = b1.getPrice();
+			String MNumber = b1.getNumber();
+			String MName = b1.getProductName();
+			try {
+				stat = conn.createStatement();
+				stat.executeUpdate("UPDATE product SET price='"+MPrice+"',number='"+MNumber+ "' ,name='"+MName+ "' WHERE id= '"+MID+"'");
+				System.out.println("UPDATE product SET price='"+MPrice+"',number='"+MNumber+  "' ,name='"+MName+ "' WHERE id= '"+MID+"'");
+				//以下两条为调试之用
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}finally
+			{
+				try {
+					stat.close();
+					conn.close();
+				
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+	
+	}
+	
+	/*
+	 * 删除商品数据
+	 */
+		public void delete(UserBean b1)
+		{	
+				dbc = new DBConnect();
+				conn = dbc.getConnect();
+				String MID = b1.getID();
+				try {
+					stat = conn.createStatement();
+					stat.executeUpdate("DELETE FROM product WHERE id= '"+MID+"'");
+					//以下两条为调试之用
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}finally
+				{
+					try {
+						stat.close();
+						conn.close();
+					
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+		
+		}
+	
 }

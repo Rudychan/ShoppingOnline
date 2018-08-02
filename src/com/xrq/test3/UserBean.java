@@ -8,6 +8,7 @@ public class UserBean {
 	private String ProductName="";
 	private String price="";
 	private String number="";
+	private String id="";
 	
 	
 	public void setproductName(String productName)
@@ -38,6 +39,13 @@ public class UserBean {
 
 	public String getNumber() {
 		return number;
+	}
+	public String getID() {
+		return id;
+	}
+	public void setID(String id)
+	{
+		this.id=id;
 	}
 	
 }
